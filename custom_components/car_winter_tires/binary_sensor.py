@@ -153,7 +153,7 @@ class CarWinterTiresBinarySensor(BinarySensorEntity):
                 "Can't get forecast data! Are you sure it's the weather provider?"
             )
 
-        _LOGGER.debug("Current temperature %s", temp)
+        _LOGGER.debug("Current temperature %.1f°C", temp)
 
         cur_date = datetime.now().strftime("%F")
         stop_date = datetime.fromtimestamp(
@@ -175,17 +175,16 @@ class CarWinterTiresBinarySensor(BinarySensorEntity):
                 continue
             if fc_date == stop_date:
                 break
-            _LOGGER.debug("Inspect weather forecast for %s", fc_date)
 
             tmin = fcast.get(ATTR_FORECAST_TEMP_LOW)
             tmax = fcast.get(ATTR_FORECAST_TEMP)
-            _LOGGER.debug("Min temperature: %s, Max temperature %s", tmin, tmax)
 
             if tmin is not None and fc_date != cur_date:
                 temp.append(self._temp2c(tmin, tmpu))
             if tmax is not None:
                 temp.append(self._temp2c(tmax, tmpu))
 
-        temp = sum(temp) / temp.count()
-        _LOGGER.debug("Average temperature: %.3f", temp)
+        _LOGGER.debug("Temperature vector: %s", temp)
+        temp = sum(temp) / len(temp)
+        _LOGGER.debug("Average temperature: %.1f°C", temp)
         self._state = temp < 7
