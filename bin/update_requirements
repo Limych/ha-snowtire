@@ -56,4 +56,4 @@ for req in manifest["requirements"]:
         print(f"{pkg} in HA requirements, no need here.")
 print(json.dumps(manifest["requirements"], indent=4, sort_keys=True))
 with open(f"{PKG_PATH}/manifest.json", "w") as manifestfile:
-    manifestfile.write(json.dumps(manifest, indent=4, sort_keys=True))
+    manifestfile.write(json.dumps(manifest, indent=4, sort_keys=False))
