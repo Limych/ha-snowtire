@@ -131,7 +131,7 @@ See separate [license file](LICENSE.md) for full text.
 [hacs]: https://hacs.xyz
 [exampleimg]: https://github.com/Limych/ha-snowtire/raw/master/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
-[forum]: https://community.home-assistant.io/
+[forum]: https://community.home-assistant.io/t/snowtire-sensor/286111
 [license]: https://github.com/Limych/ha-Snowtire/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
