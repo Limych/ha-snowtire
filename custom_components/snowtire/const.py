@@ -8,7 +8,7 @@ https://github.com/Limych/ha-snowtire/
 # Base component constants
 NAME = "Snowtire Sensor"
 DOMAIN = "snowtire"
-VERSION = "0.1.0.dev0"
+VERSION = "0.1.0b2"
 ISSUE_URL = "https://github.com/Limych/ha-snowtire/issues"
 
 STARTUP_MESSAGE = f"""
