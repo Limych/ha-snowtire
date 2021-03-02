@@ -9,7 +9,3 @@ The Snowtire binary sensor.
 For more details about this platform, please refer to the documentation at
 https://github.com/Limych/ha-snowtire/
 """
-
-# Base component constants
-VERSION = "dev"
-ISSUE_URL = "https://github.com/Limych/ha-snowtire/issues"

@@ -20,30 +20,29 @@ except ImportError:
     from homeassistant.components.binary_sensor import (
         BinarySensorDevice as BinarySensorEntity,
     )
+
 from homeassistant.components.weather import (
-    ATTR_FORECAST_TIME,
+    ATTR_FORECAST,
     ATTR_FORECAST_TEMP,
     ATTR_FORECAST_TEMP_LOW,
+    ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
-    ATTR_FORECAST,
 )
 from homeassistant.const import CONF_NAME, EVENT_HOMEASSISTANT_START, TEMP_CELSIUS
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import dt as dt_util
 from homeassistant.util.temperature import convert as convert_temperature
 
-from . import (
-    VERSION,
-    ISSUE_URL,
-)
 from .const import (
-    CONF_WEATHER,
-    DEFAULT_NAME,
-    DEFAULT_DAYS,
+    ATTR_TYRE_TYPE,
     CONF_DAYS,
+    CONF_WEATHER,
+    DEFAULT_DAYS,
+    DEFAULT_NAME,
+    STARTUP_MESSAGE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,25 +57,24 @@ PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
 
 
 # pylint: disable=w0613
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+async def async_setup_platform(
+    hass: HomeAssistant, config, async_add_entities, discovery_info=None
+):
     """Set up the Snowtire sensor."""
     # Print startup message
-    _LOGGER.info("Version %s", VERSION)
-    _LOGGER.info(
-        "If you have ANY issues with this, please report them here: %s", ISSUE_URL
-    )
+    _LOGGER.info(STARTUP_MESSAGE)
 
     name = config.get(CONF_NAME)
     weather = config.get(CONF_WEATHER)
     days = config.get(CONF_DAYS)
 
-    async_add_entities([CarWinterTiresBinarySensor(hass, name, weather, days)])
+    async_add_entities([SnowtireBinarySensor(hass, name, weather, days)])
 
 
-class CarWinterTiresBinarySensor(BinarySensorEntity):
+class SnowtireBinarySensor(BinarySensorEntity):
     """Implementation of an Snowtire binary sensor."""
 
-    def __init__(self, hass, friendly_name, weather_entity, days):
+    def __init__(self, hass: HomeAssistant, friendly_name, weather_entity, days):
         """Initialize the sensor."""
         self._hass = hass
         self._name = friendly_name
@@ -88,9 +86,8 @@ class CarWinterTiresBinarySensor(BinarySensorEntity):
         """Register callbacks."""
 
         @callback
-        def sensor_state_listener(  # pylint: disable=w0613
-            entity, old_state, new_state
-        ):
+        # pylint: disable=w0613
+        def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
             self.async_schedule_update_ha_state(True)
 
@@ -124,6 +121,13 @@ class CarWinterTiresBinarySensor(BinarySensorEntity):
     def icon(self):
         """Return the icon to use in the frontend, if any."""
         return "mdi:snowflake"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            ATTR_TYRE_TYPE: "Winter" if self.is_on else "Summer",
+        }
 
     @staticmethod
     def _temp2c(temperature: float, temperature_unit: str) -> float:
