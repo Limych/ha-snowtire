@@ -1,4 +1,4 @@
 {
-  "name": "Car Winter Tires sensor",
+  "name": "Snowtire sensor",
   "domains": ["sensor"]
 }

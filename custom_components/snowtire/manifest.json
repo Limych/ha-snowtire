@@ -5,9 +5,9 @@
     "dependencies": [
         "weather"
     ],
-    "documentation": "https://github.com/Limych/ha-car_winter_tires/",
-    "domain": "car_winter_tires",
-    "name": "Car Winter Tires",
+    "documentation": "https://github.com/Limych/ha-snowtire/",
+    "domain": "snowtire",
+    "name": "Snowtire",
     "requirements": [
         "geopy~=2.0",
         "geohash2~=1.1"

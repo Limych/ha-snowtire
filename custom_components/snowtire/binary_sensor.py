@@ -4,10 +4,10 @@
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 #
 """
-The Car Winter Tires binary sensor.
+The Snowtire binary sensor.
 
 For more details about this platform, please refer to the documentation at
-https://github.com/Limych/ha-car_winter_tires/
+https://github.com/Limych/ha-snowtire/
 """
 import logging
 from datetime import datetime
@@ -59,7 +59,7 @@ PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
 
 # pylint: disable=w0613
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the Car Winter Tires sensor."""
+    """Set up the Snowtire sensor."""
     # Print startup message
     _LOGGER.info("Version %s", VERSION)
     _LOGGER.info(
@@ -74,7 +74,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
 
 class CarWinterTiresBinarySensor(BinarySensorEntity):
-    """Implementation of an Car Winter Tires binary sensor."""
+    """Implementation of an Snowtire binary sensor."""
 
     def __init__(self, hass, friendly_name, weather_entity, days):
         """Initialize the sensor."""

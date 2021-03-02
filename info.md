@@ -1,6 +1,6 @@
 This component checks the weather forecast for several days in advance and concludes whether it is worth washing the car now.
 
-![Example](https://github.com/Limych/ha-car_winter_tires/raw/master/example.jpg)
+![Example](https://github.com/Limych/ha-snowtire/raw/master/example.jpg)
 
 ## Features:
 
@@ -10,10 +10,10 @@ This component checks the weather forecast for several days in advance and concl
 
 ## Links
 
-- [Documentation](https://github.com/Limych/ha-car_winter_tires)
-- [Configuration](https://github.com/Limych/ha-car_winter_tires#configuration-variables)
-- [Report a Bug](https://github.com/Limych/ha-car_winter_tires/issues/new?template=bug_report.md)
-- [Suggest an idea](https://github.com/Limych/ha-car_winter_tires/issues/new?template=feature_request.md)
+- [Documentation](https://github.com/Limych/ha-snowtire)
+- [Configuration](https://github.com/Limych/ha-snowtire#configuration-variables)
+- [Report a Bug](https://github.com/Limych/ha-snowtire/issues/new?template=bug_report.md)
+- [Suggest an idea](https://github.com/Limych/ha-snowtire/issues/new?template=feature_request.md)
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
