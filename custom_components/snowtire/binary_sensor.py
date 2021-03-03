@@ -116,6 +116,11 @@ class SnowtireBinarySensor(BinarySensorEntity):
         return self._name
 
     @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self._state is not None
+
+    @property
     def is_on(self):
         """Return True if sensor is on."""
         return self._state
@@ -129,7 +134,11 @@ class SnowtireBinarySensor(BinarySensorEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-            ATTR_TYRE_TYPE: "Winter" if self.is_on else "Summer",
+            ATTR_TYRE_TYPE: None
+            if self.is_on is None
+            else "Winter"
+            if self.is_on
+            else "Summer",
         }
 
     @staticmethod

@@ -51,15 +51,14 @@ async def test_setup_platform(hass: HomeAssistant):
 
 async def test_sensor_initialization(default_sensor):
     """Test sensor initialization."""
-    expected_attributes = {
-        ATTR_TYRE_TYPE: "Summer",
-    }
-
     assert default_sensor.name == "test"
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None
     assert default_sensor.icon == ICON
-    assert default_sensor.device_state_attributes == expected_attributes
+    assert default_sensor.available is False
+    assert default_sensor.device_state_attributes == {
+        ATTR_TYRE_TYPE: None,
+    }
 
 
 async def test_async_added_to_hass(default_sensor):
@@ -119,7 +118,11 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     )
 
     await default_sensor.async_update()
+    assert default_sensor.available
     assert default_sensor.is_on
+    assert default_sensor.device_state_attributes == {
+        ATTR_TYRE_TYPE: "Winter",
+    }
 
     hass.states.async_set(
         TEST_WEATHER_ENTITY,
@@ -131,4 +134,8 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     )
 
     await default_sensor.async_update()
+    assert default_sensor.available
     assert default_sensor.is_on is False
+    assert default_sensor.device_state_attributes == {
+        ATTR_TYRE_TYPE: "Summer",
+    }
