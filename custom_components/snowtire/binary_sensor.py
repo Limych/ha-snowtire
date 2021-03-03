@@ -11,12 +11,13 @@ https://github.com/Limych/ha-snowtire/
 """
 import logging
 from datetime import datetime
+from typing import Optional
 
 import voluptuous as vol
 
 try:
     from homeassistant.components.binary_sensor import BinarySensorEntity
-except ImportError:
+except ImportError:  # pragma: no cover
     from homeassistant.components.binary_sensor import (
         BinarySensorDevice as BinarySensorEntity,
     )
@@ -28,6 +29,7 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
 )
+from homeassistant.components.weather import DOMAIN as WEATHER
 from homeassistant.const import CONF_NAME, EVENT_HOMEASSISTANT_START, TEMP_CELSIUS
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
@@ -42,6 +44,7 @@ from .const import (
     CONF_WEATHER,
     DEFAULT_DAYS,
     DEFAULT_NAME,
+    ICON,
     STARTUP_MESSAGE,
 )
 
@@ -49,9 +52,9 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_WEATHER): cv.entity_id,
+        vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER),
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): vol.Coerce(int),
+        vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): cv.positive_int,
     }
 )
 
@@ -120,7 +123,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        return "mdi:snowflake"
+        return ICON
 
     @property
     def device_state_attributes(self):
@@ -130,7 +133,9 @@ class SnowtireBinarySensor(BinarySensorEntity):
         }
 
     @staticmethod
-    def _temp2c(temperature: float, temperature_unit: str) -> float:
+    def _temp2c(
+        temperature: Optional[float], temperature_unit: Optional[str]
+    ) -> Optional[float]:
         """Convert weather temperature to Celsius degree."""
         if temperature is not None and temperature_unit != TEMP_CELSIUS:
             temperature = convert_temperature(
