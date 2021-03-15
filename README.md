@@ -127,7 +127,7 @@ See separate [license file](LICENSE.md) for full text.
 [component]: https://github.com/Limych/ha-Snowtire
 [commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-Snowtire.svg?style=popout
 [commits]: https://github.com/Limych/ha-Snowtire/commits/master
-[hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
+[hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
 [exampleimg]: https://github.com/Limych/ha-snowtire/raw/master/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
