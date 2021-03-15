@@ -35,9 +35,6 @@ I also suggest you [visit the support topic][forum-support] on the community for
 
 ### Manual installation
 
-1. Configure integration via Home Assistant GUI or via your `configuration.yaml` file using the configuration instructions below.
-1. Restart Home Assistant
-
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 1. If you do not have a `custom_components` directory (folder) there, you need to create it.
 1. In the `custom_components` directory (folder) create a new folder called `snowtire`.
