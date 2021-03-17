@@ -1,6 +1,5 @@
 """The test for the snowtire binary sensor platform."""
 # pylint: disable=redefined-outer-name
-import datetime
 from unittest.mock import MagicMock
 
 import pytest
@@ -14,6 +13,7 @@ from homeassistant.components.weather import (
 from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.util import dt as dt_util
 from pytest import raises
 
 from custom_components.snowtire.binary_sensor import (
@@ -85,7 +85,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     with raises(HomeAssistantError):
         await default_sensor.async_update()
 
-    today = datetime.datetime.combine(datetime.datetime.now().date(), datetime.time())
+    today = dt_util.start_of_local_day()
     today_ts = int(today.timestamp() * 1000)
     day = days = 86400000
 
@@ -99,7 +99,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         },
         {
             ATTR_FORECAST_TIME: today_ts + day,
-            ATTR_FORECAST_TEMP_LOW: -1,
+            ATTR_FORECAST_TEMP_LOW: 1,
             ATTR_FORECAST_TEMP: 8,
         },
         {
@@ -111,7 +111,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         TEST_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 3.9,
+            ATTR_WEATHER_TEMPERATURE: -1,
             ATTR_FORECAST: forecast,
         },
     )
@@ -124,7 +124,20 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         TEST_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 4,
+            ATTR_WEATHER_TEMPERATURE: 9.9,
+            ATTR_FORECAST: forecast,
+        },
+    )
+
+    await default_sensor.async_update()
+    assert default_sensor.available
+    assert default_sensor.is_on
+
+    hass.states.async_set(
+        TEST_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: 10,
             ATTR_FORECAST: forecast,
         },
     )
