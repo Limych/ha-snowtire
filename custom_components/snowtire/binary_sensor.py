@@ -111,7 +111,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
     @property
     def device_class(self):
         """Return the class of this device, from component DEVICE_CLASSES."""
-        return f"{DOMAIN}__tyre_type"
+        return f"{DOMAIN}__type"
 
     @property
     def name(self):

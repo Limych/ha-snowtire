@@ -1,6 +1,6 @@
 {
   "state": {
-    "snowtire__tyre_type": {
+    "snowtire__type": {
       "off": "Summer",
       "on": "Winter"
     }
