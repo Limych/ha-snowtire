@@ -52,7 +52,7 @@ async def test_setup_platform(hass: HomeAssistant):
 async def test_sensor_initialization(default_sensor):
     """Test sensor initialization."""
     assert default_sensor.unique_id == "weather.test-1"
-    assert default_sensor.device_class == "tyre_type"
+    assert default_sensor.device_class == f"{DOMAIN}__tyre_type"
     assert default_sensor.name == "test"
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None

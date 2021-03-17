@@ -36,6 +36,7 @@ from .const import (
     CONF_WEATHER,
     DEFAULT_DAYS,
     DEFAULT_NAME,
+    DOMAIN,
     ICON,
     STARTUP_MESSAGE,
 )
@@ -110,7 +111,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
     @property
     def device_class(self):
         """Return the class of this device, from component DEVICE_CLASSES."""
-        return "tyre_type"
+        return f"{DOMAIN}__tyre_type"
 
     @property
     def name(self):
