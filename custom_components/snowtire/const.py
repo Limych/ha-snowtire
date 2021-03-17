@@ -31,6 +31,3 @@ CONF_DAYS = "days"
 # Defaults
 DEFAULT_NAME = "Snowtire"
 DEFAULT_DAYS = 7
-
-# Attributes
-ATTR_TYRE_TYPE = "Tyre type"

@@ -1,0 +1,8 @@
+{
+  "state": {
+    "tyre_type": {
+      "off": "Summer",
+      "on": "Winter"
+    }
+  }
+}

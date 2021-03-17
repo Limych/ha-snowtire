@@ -15,11 +15,7 @@ _This component checks the weather forecast for several days in advance and conc
 
 ![Example][exampleimg]
 
-I also suggest you [visit the support topic][forum-support] on the community forum.
-
-> **_Note_**:\
-> Unfortunately, the binary sensor can show only two states — “on” and “off”.
-> In the case of this sensor, “on” should be interpreted as *“it is time to set **winter** tires to the car”*, and “off” — as *“it is time to set **summer** tires to the car”*.
+I also suggest you [visit the support topic][forum] on the community forum.
 
 ## Installation
 

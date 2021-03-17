@@ -1,5 +1,6 @@
 """The test for the snowtire binary sensor platform."""
 # pylint: disable=redefined-outer-name
+import datetime
 from unittest.mock import MagicMock
 
 import pytest
@@ -13,14 +14,13 @@ from homeassistant.components.weather import (
 from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.util import dt as dt_util
 from pytest import raises
 
 from custom_components.snowtire.binary_sensor import (
     SnowtireBinarySensor,
     async_setup_platform,
 )
-from custom_components.snowtire.const import ATTR_TYRE_TYPE, CONF_WEATHER, DOMAIN, ICON
+from custom_components.snowtire.const import CONF_WEATHER, DOMAIN, ICON
 
 TEST_WEATHER_ENTITY = "weather.test"
 TEST_DAYS = 1
@@ -51,14 +51,13 @@ async def test_setup_platform(hass: HomeAssistant):
 
 async def test_sensor_initialization(default_sensor):
     """Test sensor initialization."""
+    assert default_sensor.unique_id == "weather.test-1"
+    assert default_sensor.device_class == "tyre_type"
     assert default_sensor.name == "test"
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None
     assert default_sensor.icon == ICON
     assert default_sensor.available is False
-    assert default_sensor.device_state_attributes == {
-        ATTR_TYRE_TYPE: None,
-    }
 
 
 async def test_async_added_to_hass(default_sensor):
@@ -86,7 +85,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     with raises(HomeAssistantError):
         await default_sensor.async_update()
 
-    today = dt_util.start_of_local_day()
+    today = datetime.datetime.combine(datetime.datetime.now().date(), datetime.time())
     today_ts = int(today.timestamp() * 1000)
     day = days = 86400000
 
@@ -112,7 +111,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         TEST_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 11,
+            ATTR_WEATHER_TEMPERATURE: 3.9,
             ATTR_FORECAST: forecast,
         },
     )
@@ -120,15 +119,12 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     await default_sensor.async_update()
     assert default_sensor.available
     assert default_sensor.is_on
-    assert default_sensor.device_state_attributes == {
-        ATTR_TYRE_TYPE: "Winter",
-    }
 
     hass.states.async_set(
         TEST_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 12,
+            ATTR_WEATHER_TEMPERATURE: 4,
             ATTR_FORECAST: forecast,
         },
     )
@@ -136,6 +132,3 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     await default_sensor.async_update()
     assert default_sensor.available
     assert default_sensor.is_on is False
-    assert default_sensor.device_state_attributes == {
-        ATTR_TYRE_TYPE: "Summer",
-    }
