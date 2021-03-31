@@ -119,10 +119,10 @@ See separate [license file](LICENSE.md) for full text.
 
 [component]: https://github.com/Limych/ha-Snowtire
 [commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-Snowtire.svg?style=popout
-[commits]: https://github.com/Limych/ha-Snowtire/commits/master
+[commits]: https://github.com/Limych/ha-Snowtire/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
-[exampleimg]: https://github.com/Limych/ha-snowtire/raw/master/example.jpg
+[exampleimg]: https://github.com/Limych/ha-snowtire/raw/dev/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/snowtire-sensor/286111
 [license]: https://github.com/Limych/ha-Snowtire/blob/main/LICENSE.md

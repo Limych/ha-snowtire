@@ -13,7 +13,7 @@
 
 _This component checks the weather forecast for several days in advance and concludes whether it is worth washing the car now._
 
-![Example](https://github.com/Limych/ha-snowtire/raw/master/example.jpg)
+![Example](https://github.com/Limych/ha-snowtire/raw/dev/example.jpg)
 
 ## Features:
 
@@ -48,10 +48,10 @@ I put a lot of work into making this repo and component available and updated to
 
 [component]: https://github.com/Limych/ha-Snowtire
 [commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-Snowtire.svg?style=popout
-[commits]: https://github.com/Limych/ha-Snowtire/commits/master
+[commits]: https://github.com/Limych/ha-Snowtire/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
 [hacs]: https://hacs.xyz
-[exampleimg]: https://github.com/Limych/ha-snowtire/raw/master/example.jpg
+[exampleimg]: https://github.com/Limych/ha-snowtire/raw/dev/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/snowtire-sensor/286111
 [license]: https://github.com/Limych/ha-Snowtire/blob/main/LICENSE.md
