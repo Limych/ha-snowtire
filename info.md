@@ -46,21 +46,21 @@ I put a lot of work into making this repo and component available and updated to
 
 ***
 
-[component]: https://github.com/Limych/ha-Snowtire
-[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-Snowtire.svg?style=popout
-[commits]: https://github.com/Limych/ha-Snowtire/commits/dev
+[component]: https://github.com/Limych/ha-snowtire
+[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-snowtire.svg?style=popout
+[commits]: https://github.com/Limych/ha-snowtire/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
 [hacs]: https://hacs.xyz
 [exampleimg]: https://github.com/Limych/ha-snowtire/raw/dev/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/snowtire-sensor/286111
-[license]: https://github.com/Limych/ha-Snowtire/blob/main/LICENSE.md
+[license]: https://github.com/Limych/ha-snowtire/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
-[releases-shield]: https://img.shields.io/github/release/Limych/ha-Snowtire.svg?style=popout
-[releases]: https://github.com/Limych/ha-Snowtire/releases
-[releases-latest]: https://github.com/Limych/ha-Snowtire/releases/latest
+[releases-shield]: https://img.shields.io/github/release/Limych/ha-snowtire.svg?style=popout
+[releases]: https://github.com/Limych/ha-snowtire/releases
+[releases-latest]: https://github.com/Limych/ha-snowtire/releases/latest
 [user_profile]: https://github.com/Limych
-[report_bug]: https://github.com/Limych/ha-Snowtire/issues/new?template=bug_report.md
-[suggest_idea]: https://github.com/Limych/ha-Snowtire/issues/new?template=feature_request.md
-[contributors]: https://github.com/Limych/ha-Snowtire/graphs/contributors
+[report_bug]: https://github.com/Limych/ha-snowtire/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/Limych/ha-snowtire/issues/new?template=feature_request.md
+[contributors]: https://github.com/Limych/ha-snowtire/graphs/contributors

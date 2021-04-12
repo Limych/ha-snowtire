@@ -51,8 +51,6 @@ binary_sensor:
     weather: weather.gismeteo_daily
 ```
 
-This sensor should work with any weather provider in any of it settings. But please note that the sensor cannot see further than the weather provider shows. Therefore, it is recommended to set the `daily` mode in the weather provider settings. If necessary, you can configure a separate weather provider instance especially for this sensor.
-
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
 <p align="center"><br>
@@ -64,6 +62,9 @@ I put a lot of work into making this repo and component available and updated to
 
 ### Configuration Variables
 
+> **_Note_**:\
+> This sensor should work with any weather provider in any of it settings. But please note that the sensor cannot see further than the weather provider shows. Therefore, it is recommended to set the `daily` mode in the weather provider settings. If necessary, you can configure a separate weather provider instance especially for this sensor.
+
 **weather:**\
   _(string) (Required)_\
   Weather provider entity ID.
@@ -73,7 +74,7 @@ I put a lot of work into making this repo and component available and updated to
   Name to use in the frontend.
 
 **days:**\
-  _(integer) (Optional) (Default value: 7)_\
+  _(positive integer) (Optional) (Default value: 7)_\
   The number of days how far forward the sensor looks for the weather forecast.
 
 ## Track updates
@@ -94,11 +95,9 @@ logger:
 
 ## Contributions are welcome!
 
-This is an active open-source project. We are always open to people who want to
-use the code or contribute to it.
+This is an active open-source project. We are always open to people who want to use the code or contribute to it.
 
-We have set up a separate document containing our
-[contribution guidelines](CONTRIBUTING.md).
+We have set up a separate document containing our [contribution guidelines](CONTRIBUTING.md).
 
 Thank you for being involved! :heart_eyes:
 
@@ -106,8 +105,7 @@ Thank you for being involved! :heart_eyes:
 
 The original setup of this component is by [Andrey "Limych" Khrolenok](https://github.com/Limych).
 
-For a full list of all authors and contributors,
-check [the contributor's page][contributors].
+For a full list of all authors and contributors, check [the contributor's page][contributors].
 
 ## License
 
@@ -117,21 +115,21 @@ See separate [license file](LICENSE.md) for full text.
 
 ***
 
-[component]: https://github.com/Limych/ha-Snowtire
-[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-Snowtire.svg?style=popout
-[commits]: https://github.com/Limych/ha-Snowtire/commits/dev
+[component]: https://github.com/Limych/ha-snowtire
+[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-snowtire.svg?style=popout
+[commits]: https://github.com/Limych/ha-snowtire/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
 [exampleimg]: https://github.com/Limych/ha-snowtire/raw/dev/example.jpg
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/snowtire-sensor/286111
-[license]: https://github.com/Limych/ha-Snowtire/blob/main/LICENSE.md
+[license]: https://github.com/Limych/ha-snowtire/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
-[releases-shield]: https://img.shields.io/github/release/Limych/ha-Snowtire.svg?style=popout
-[releases]: https://github.com/Limych/ha-Snowtire/releases
-[releases-latest]: https://github.com/Limych/ha-Snowtire/releases/latest
+[releases-shield]: https://img.shields.io/github/release/Limych/ha-snowtire.svg?style=popout
+[releases]: https://github.com/Limych/ha-snowtire/releases
+[releases-latest]: https://github.com/Limych/ha-snowtire/releases/latest
 [user_profile]: https://github.com/Limych
-[report_bug]: https://github.com/Limych/ha-Snowtire/issues/new?template=bug_report.md
-[suggest_idea]: https://github.com/Limych/ha-Snowtire/issues/new?template=feature_request.md
-[contributors]: https://github.com/Limych/ha-Snowtire/graphs/contributors
+[report_bug]: https://github.com/Limych/ha-snowtire/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/Limych/ha-snowtire/issues/new?template=feature_request.md
+[contributors]: https://github.com/Limych/ha-snowtire/graphs/contributors
