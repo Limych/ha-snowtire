@@ -22,7 +22,8 @@ If you have ANY issues with this you need to open an issue here:
 """
 
 # Icons
-ICON = "mdi:snowflake"
+ICON_WINTER = "mdi:snowflake"
+ICON_SUMMER = "mdi:white-balance-sunny"
 
 # Configuration and options
 CONF_WEATHER = "weather"
