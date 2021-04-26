@@ -20,7 +20,7 @@ from custom_components.snowtire.binary_sensor import (
     SnowtireBinarySensor,
     async_setup_platform,
 )
-from custom_components.snowtire.const import CONF_WEATHER, DOMAIN, ICON
+from custom_components.snowtire.const import CONF_WEATHER, DOMAIN, ICON_WINTER, ICON_SUMMER
 
 TEST_WEATHER_ENTITY = "weather.test"
 TEST_DAYS = 1
@@ -56,7 +56,7 @@ async def test_sensor_initialization(default_sensor):
     assert default_sensor.name == "test"
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None
-    assert default_sensor.icon == ICON
+    assert default_sensor.icon == ICON_WINTER
     assert default_sensor.available is False
 
 
@@ -119,6 +119,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     await default_sensor.async_update()
     assert default_sensor.available
     assert default_sensor.is_on
+    assert default_sensor.icon == ICON_WINTER
 
     hass.states.async_set(
         TEST_WEATHER_ENTITY,
@@ -132,6 +133,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     await default_sensor.async_update()
     assert default_sensor.available
     assert default_sensor.is_on
+    assert default_sensor.icon == ICON_WINTER
 
     hass.states.async_set(
         TEST_WEATHER_ENTITY,
@@ -145,3 +147,4 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     await default_sensor.async_update()
     assert default_sensor.available
     assert default_sensor.is_on is False
+    assert default_sensor.icon == ICON_SUMMER

@@ -37,7 +37,8 @@ from .const import (
     DEFAULT_DAYS,
     DEFAULT_NAME,
     DOMAIN,
-    ICON,
+    ICON_WINTER,
+    ICON_SUMMER,
     STARTUP_MESSAGE,
 )
 
@@ -131,7 +132,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        return ICON
+        return ICON_SUMMER if self.is_on is False else ICON_WINTER
 
     @staticmethod
     def _temp2c(
