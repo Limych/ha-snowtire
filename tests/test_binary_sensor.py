@@ -20,8 +20,15 @@ from custom_components.snowtire.binary_sensor import (
     SnowtireBinarySensor,
     async_setup_platform,
 )
-from custom_components.snowtire.const import CONF_WEATHER, DOMAIN, ICON_WINTER, ICON_SUMMER
+from custom_components.snowtire.const import (
+    CONF_WEATHER,
+    DOMAIN,
+    ICON_SUMMER,
+    ICON_WINTER,
+)
 
+TEST_UNIQUE_ID = "test_id"
+TEST_NAME = "test_name"
 TEST_WEATHER_ENTITY = "weather.test"
 TEST_DAYS = 1
 
@@ -34,11 +41,11 @@ TEST_CONFIG = {
 @pytest.fixture()
 def default_sensor(hass: HomeAssistant):
     """Create an AverageSensor with default values."""
-    name = "test"
-    weather_entity = TEST_WEATHER_ENTITY
-    days = TEST_DAYS
-
-    return SnowtireBinarySensor(hass, name, weather_entity, days)
+    entity = SnowtireBinarySensor(
+        TEST_UNIQUE_ID, TEST_NAME, TEST_WEATHER_ENTITY, TEST_DAYS
+    )
+    entity.hass = hass
+    return entity
 
 
 async def test_setup_platform(hass: HomeAssistant):
@@ -51,13 +58,21 @@ async def test_setup_platform(hass: HomeAssistant):
 
 async def test_sensor_initialization(default_sensor):
     """Test sensor initialization."""
-    assert default_sensor.unique_id == "weather.test-1"
+    assert default_sensor.unique_id == TEST_UNIQUE_ID
     assert default_sensor.device_class == f"{DOMAIN}__type"
-    assert default_sensor.name == "test"
+    assert default_sensor.name == TEST_NAME
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None
     assert default_sensor.icon == ICON_WINTER
     assert default_sensor.available is False
+
+    entity = SnowtireBinarySensor(None, TEST_NAME, TEST_WEATHER_ENTITY, TEST_DAYS)
+    assert entity.unique_id is None
+
+    entity = SnowtireBinarySensor(
+        "__legacy__", TEST_NAME, TEST_WEATHER_ENTITY, TEST_DAYS
+    )
+    assert entity.unique_id == f"{TEST_WEATHER_ENTITY}-1"
 
 
 async def test_async_added_to_hass(default_sensor):
