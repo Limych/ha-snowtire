@@ -1,5 +1,6 @@
 """The test for the snowtire binary sensor platform."""
 # pylint: disable=redefined-outer-name
+from typing import Final
 from unittest.mock import MagicMock
 
 import pytest
@@ -27,12 +28,12 @@ from custom_components.snowtire.const import (
     ICON_WINTER,
 )
 
-MOCK_UNIQUE_ID = "test_id"
-MOCK_NAME = "test_name"
-MOCK_WEATHER_ENTITY = "weather.test"
-MOCK_DAYS = 1
+MOCK_UNIQUE_ID: Final = "test_id"
+MOCK_NAME: Final = "test_name"
+MOCK_WEATHER_ENTITY: Final = "weather.test"
+MOCK_DAYS: Final = 1
 
-MOCK_CONFIG = {
+MOCK_CONFIG: Final = {
     CONF_PLATFORM: DOMAIN,
     CONF_WEATHER: MOCK_WEATHER_ENTITY,
 }
