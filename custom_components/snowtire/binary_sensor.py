@@ -60,7 +60,7 @@ PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
 )
 
 
-# pylint: disable=w0613
+# pylint: disable=unused-argument
 async def async_setup_platform(
     hass: HomeAssistant,
     config: ConfigType,
@@ -98,7 +98,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
         self._days = days
 
         self._attr_unique_id = (
-            "%s-%d" % (self._weather_entity, self._days)
+            f"{self._weather_entity}-{self._days}"
             if unique_id == "__legacy__"
             else unique_id
         )
@@ -111,13 +111,13 @@ class SnowtireBinarySensor(BinarySensorEntity):
         """Register callbacks."""
 
         @callback
-        # pylint: disable=w0613
+        # pylint: disable=unused-argument
         def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
             self.async_schedule_update_ha_state(True)
 
         @callback
-        def sensor_startup(event):  # pylint: disable=w0613
+        def sensor_startup(event):  # pylint: disable=unused-argument
             """Update template on startup."""
             async_track_state_change(
                 self.hass, [self._weather_entity], sensor_state_listener
@@ -149,7 +149,9 @@ class SnowtireBinarySensor(BinarySensorEntity):
 
         return temperature
 
-    async def async_update(self):  # pylint: disable=r0912,r0915
+    async def async_update(
+        self,
+    ):  # pylint: disable=too-many-branches,too-many-statements
         """Update the sensor state."""
         wdata = self.hass.states.get(self._weather_entity)
 
