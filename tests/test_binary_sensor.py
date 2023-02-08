@@ -4,17 +4,6 @@ from typing import Final
 from unittest.mock import MagicMock
 
 import pytest
-from homeassistant.components.weather import (
-    ATTR_FORECAST,
-    ATTR_FORECAST_TEMP,
-    ATTR_FORECAST_TEMP_LOW,
-    ATTR_FORECAST_TIME,
-    ATTR_WEATHER_TEMPERATURE,
-)
-from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
-from homeassistant.util import dt as dt_util
 from pytest import raises
 
 from custom_components.snowtire.binary_sensor import (
@@ -27,6 +16,17 @@ from custom_components.snowtire.const import (
     ICON_SUMMER,
     ICON_WINTER,
 )
+from homeassistant.components.weather import (
+    ATTR_FORECAST,
+    ATTR_FORECAST_TEMP,
+    ATTR_FORECAST_TEMP_LOW,
+    ATTR_FORECAST_TIME,
+    ATTR_WEATHER_TEMPERATURE,
+)
+from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.util import dt as dt_util
 
 MOCK_UNIQUE_ID: Final = "test_id"
 MOCK_NAME: Final = "test_name"

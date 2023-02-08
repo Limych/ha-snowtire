@@ -3,17 +3,18 @@
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 #
-"""
-The Snowtire binary sensor.
+"""The Snowtire binary sensor.
 
 For more details about this platform, please refer to the documentation at
 https://github.com/Limych/ha-snowtire/
 """
-import logging
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, Optional
+import logging
+from typing import Optional
 
 import voluptuous as vol
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.weather import (
     ATTR_FORECAST,
@@ -21,8 +22,8 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_TEMP_LOW,
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
+    DOMAIN as WEATHER,
 )
-from homeassistant.components.weather import DOMAIN as WEATHER
 from homeassistant.const import (
     CONF_NAME,
     CONF_UNIQUE_ID,
