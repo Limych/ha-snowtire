@@ -24,7 +24,7 @@ from homeassistant.components.weather import (
     ATTR_WEATHER_TEMPERATURE,
 )
 from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import dt as dt_util
 
@@ -82,16 +82,20 @@ async def test_async_added_to_hass(default_sensor):
 
 
 # pylint: disable=protected-access
-async def test__temp2c():
+@pytest.mark.parametrize(
+    "temp1, temp2",
+    [(0, -17.78), (10, -12.22), (20, -6.67), (30, -1.11), (40, 4.44), (50, 10)],
+)
+async def test__temp2c(temp1, temp2):
     """Test temperature conversions."""
-    assert SnowtireBinarySensor._temp2c(10, TEMP_CELSIUS) == 10
-    assert round(SnowtireBinarySensor._temp2c(10, TEMP_FAHRENHEIT), 2) == -12.22
+    assert SnowtireBinarySensor._temp2c(temp1, TEMP_CELSIUS) == temp1
+    assert round(SnowtireBinarySensor._temp2c(temp1, TEMP_FAHRENHEIT), 2) == temp2
     assert SnowtireBinarySensor._temp2c(None, TEMP_CELSIUS) is None
 
 
 async def test_async_update(hass: HomeAssistant, default_sensor):
     """Test sensor update."""
-    hass.states._states[MOCK_WEATHER_ENTITY] = None
+    hass.states._states[MOCK_WEATHER_ENTITY] = State(MOCK_WEATHER_ENTITY, None)
 
     with raises(HomeAssistantError):
         await default_sensor.async_update()

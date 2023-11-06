@@ -36,7 +36,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt as dt_util
-from homeassistant.util.temperature import convert as convert_temperature
+from homeassistant.util.unit_conversion import TemperatureConverter
 
 from .const import (
     CONF_DAYS,
@@ -144,7 +144,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
     ) -> Optional[float]:
         """Convert weather temperature to Celsius degree."""
         if temperature is not None and temperature_unit != TEMP_CELSIUS:
-            temperature = convert_temperature(
+            temperature = TemperatureConverter.convert(
                 temperature, temperature_unit, TEMP_CELSIUS
             )
 
