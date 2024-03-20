@@ -23,7 +23,7 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
 )
-from homeassistant.const import CONF_PLATFORM, TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.const import CONF_PLATFORM, UnitOfTemperature
 from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import dt as dt_util
@@ -88,9 +88,9 @@ async def test_async_added_to_hass(default_sensor):
 )
 async def test__temp2c(temp1, temp2):
     """Test temperature conversions."""
-    assert SnowtireBinarySensor._temp2c(temp1, TEMP_CELSIUS) == temp1
-    assert round(SnowtireBinarySensor._temp2c(temp1, TEMP_FAHRENHEIT), 2) == temp2
-    assert SnowtireBinarySensor._temp2c(None, TEMP_CELSIUS) is None
+    assert SnowtireBinarySensor._temp2c(temp1, UnitOfTemperature.CELSIUS) == temp1
+    assert round(SnowtireBinarySensor._temp2c(temp1, UnitOfTemperature.FAHRENHEIT), 2) == temp2
+    assert SnowtireBinarySensor._temp2c(None, UnitOfTemperature.CELSIUS) is None
 
 
 async def test_async_update(hass: HomeAssistant, default_sensor):
