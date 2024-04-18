@@ -54,13 +54,13 @@ jobs:
 
       - name: "Set up Python"
         if: env.release_version != '' && success()
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version-file: 'pyproject.toml'
 
       - name: "Cache pip"
         if: env.release_version != '' && success()
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
