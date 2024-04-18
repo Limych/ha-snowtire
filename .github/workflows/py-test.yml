@@ -63,18 +63,14 @@ jobs:
     name: "Test package"
     needs: lint
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 3
-      matrix:
-        python-version: ['3.12']
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version-file: 'pyproject.toml'
 
       - name: "Cache pip"
         uses: actions/cache@v4
