@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from pytest import raises
+from pytest_homeassistant_custom_component.common import async_mock_service
 
 from custom_components.snowtire.binary_sensor import (
     SnowtireBinarySensor,
@@ -18,19 +19,21 @@ from custom_components.snowtire.const import (
     ICON_WINTER,
 )
 from homeassistant.components.weather import (
+    ATTR_FORECAST_TEMP,
+    ATTR_FORECAST_TEMP_LOW,
+    ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
+    SERVICE_GET_FORECASTS,
     WeatherEntityFeature,
 )
 from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
     CONF_PLATFORM,
-    TEMP_CELSIUS,
-    TEMP_FAHRENHEIT,
+    UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
-
-# from homeassistant.util import dt as dt_util
+from homeassistant.util import dt as dt_util
 
 MOCK_UNIQUE_ID: Final = "test_id"
 MOCK_NAME: Final = "test_name"
@@ -92,12 +95,14 @@ async def test_async_added_to_hass(default_sensor):
 )
 async def test__temp2c(temp1, temp2):
     """Test temperature conversions."""
-    assert SnowtireBinarySensor._temp2c(temp1, TEMP_CELSIUS) == temp1
-    assert round(SnowtireBinarySensor._temp2c(temp1, TEMP_FAHRENHEIT), 2) == temp2
-    assert SnowtireBinarySensor._temp2c(None, TEMP_CELSIUS) is None
+    assert SnowtireBinarySensor._temp2c(temp1, UnitOfTemperature.CELSIUS) == temp1
+    assert (
+        round(SnowtireBinarySensor._temp2c(temp1, UnitOfTemperature.FAHRENHEIT), 2)
+        == temp2
+    )
+    assert SnowtireBinarySensor._temp2c(None, UnitOfTemperature.CELSIUS) is None
 
 
-@pytest.mark.skip(reason="Can't mock a weather integration")
 async def test_async_update(hass: HomeAssistant, default_sensor):
     """Test sensor update."""
     hass.states._states[MOCK_WEATHER_ENTITY] = State(MOCK_WEATHER_ENTITY, None)
@@ -110,27 +115,33 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     with raises(HomeAssistantError):
         await default_sensor.async_update()
 
-    # today = dt_util.start_of_local_day()
-    # today_ts = int(today.timestamp() * 1000)
-    # day = days = 86400000
+    today = dt_util.start_of_local_day()
+    today_ts = int(today.timestamp() * 1000)
+    day = days = 86400000
 
-    # forecast = [
-    #     {
-    #         ATTR_FORECAST_TIME: today_ts - day,
-    #     },
-    #     {
-    #         ATTR_FORECAST_TIME: today,
-    #         ATTR_FORECAST_TEMP: 9,
-    #     },
-    #     {
-    #         ATTR_FORECAST_TIME: today_ts + day,
-    #         ATTR_FORECAST_TEMP_LOW: 1,
-    #         ATTR_FORECAST_TEMP: 8,
-    #     },
-    #     {
-    #         ATTR_FORECAST_TIME: today_ts + (MOCK_DAYS + 1) * days,
-    #     },
-    # ]
+    forecast = {
+        MOCK_WEATHER_ENTITY: {
+            "forecast": [
+                {
+                    ATTR_FORECAST_TIME: today_ts - day,
+                },
+                {
+                    ATTR_FORECAST_TIME: today,
+                    ATTR_FORECAST_TEMP: 9,
+                },
+                {
+                    ATTR_FORECAST_TIME: today_ts + day,
+                    ATTR_FORECAST_TEMP_LOW: 1,
+                    ATTR_FORECAST_TEMP: 8,
+                },
+                {
+                    ATTR_FORECAST_TIME: today_ts + (MOCK_DAYS + 1) * days,
+                },
+            ]
+        }
+    }
+
+    async_mock_service(hass, CONF_WEATHER, SERVICE_GET_FORECASTS, response=forecast)
 
     hass.states.async_set(
         MOCK_WEATHER_ENTITY,
