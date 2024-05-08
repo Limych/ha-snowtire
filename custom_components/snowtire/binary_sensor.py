@@ -29,7 +29,7 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
-    TEMP_CELSIUS,
+    UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
@@ -144,9 +144,9 @@ class SnowtireBinarySensor(BinarySensorEntity):
         temperature: float | None, temperature_unit: str | None
     ) -> float | None:
         """Convert weather temperature to Celsius degree."""
-        if temperature is not None and temperature_unit != TEMP_CELSIUS:
+        if temperature is not None and temperature_unit != UnitOfTemperature.CELSIUS:
             temperature = TemperatureConverter.convert(
-                temperature, temperature_unit, TEMP_CELSIUS
+                temperature, temperature_unit, UnitOfTemperature.CELSIUS
             )
 
         return temperature
@@ -197,7 +197,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
             fc_date = fcast.get(ATTR_FORECAST_TIME)
             if isinstance(fc_date, int):
                 fc_date = dt_util.as_local(
-                    datetime.utcfromtimestamp(fc_date / 1000)
+                    datetime.fromtimestamp(fc_date / 1000, dt_util.UTC)
                 ).isoformat()
             elif isinstance(fc_date, datetime):
                 fc_date = dt_util.as_local(fc_date).isoformat()
