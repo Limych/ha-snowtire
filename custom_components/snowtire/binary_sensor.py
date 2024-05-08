@@ -11,20 +11,21 @@ https://github.com/Limych/ha-snowtire/
 from collections.abc import Callable
 from datetime import datetime
 import logging
-from typing import Optional
 
 import voluptuous as vol
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.weather import (
-    ATTR_FORECAST,
     ATTR_FORECAST_TEMP,
     ATTR_FORECAST_TEMP_LOW,
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
     DOMAIN as WEATHER,
+    SERVICE_GET_FORECASTS,
+    WeatherEntityFeature,
 )
 from homeassistant.const import (
+    ATTR_SUPPORTED_FEATURES,
     CONF_NAME,
     CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
@@ -89,7 +90,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
 
     def __init__(
         self,
-        unique_id: Optional[str],
+        unique_id: str | None,
         friendly_name: str,
         weather_entity: str,
         days: int,
@@ -140,8 +141,8 @@ class SnowtireBinarySensor(BinarySensorEntity):
 
     @staticmethod
     def _temp2c(
-        temperature: Optional[float], temperature_unit: Optional[str]
-    ) -> Optional[float]:
+        temperature: float | None, temperature_unit: str | None
+    ) -> float | None:
         """Convert weather temperature to Celsius degree."""
         if temperature is not None and temperature_unit != TEMP_CELSIUS:
             temperature = TemperatureConverter.convert(
@@ -161,9 +162,21 @@ class SnowtireBinarySensor(BinarySensorEntity):
                 f"Unable to find an entity called {self._weather_entity}"
             )
 
+        if (
+            wdata.attributes.get(ATTR_SUPPORTED_FEATURES)
+            is not WeatherEntityFeature.FORECAST_DAILY
+        ):
+            raise HomeAssistantError("Weather entity doesn't support 'daily' forecast")
+
         tmpu = self.hass.config.units.temperature_unit
         temp = wdata.attributes.get(ATTR_WEATHER_TEMPERATURE)
-        forecast = wdata.attributes.get(ATTR_FORECAST)
+        forecast = await self.hass.services.async_call(
+            WEATHER,
+            SERVICE_GET_FORECASTS,
+            {"type": "daily", "entity_id": [self._weather_entity]},
+            blocking=True,
+            return_response=True,
+        )
 
         if forecast is None:
             raise HomeAssistantError(
@@ -180,7 +193,7 @@ class SnowtireBinarySensor(BinarySensorEntity):
 
         _LOGGER.debug("Inspect weather forecast from %s till %s", cur_date, stop_date)
         temp = [self._temp2c(temp, tmpu)]
-        for fcast in forecast:
+        for fcast in forecast[self._weather_entity]["forecast"]:
             fc_date = fcast.get(ATTR_FORECAST_TIME)
             if isinstance(fc_date, int):
                 fc_date = dt_util.as_local(
