@@ -103,6 +103,67 @@ async def test__temp2c(temp1, temp2):
     assert SnowtireBinarySensor._temp2c(None, UnitOfTemperature.CELSIUS) is None
 
 
+async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
+    """Test sensor update on forecast fail."""
+    async_mock_service(
+        hass,
+        CONF_WEATHER,
+        SERVICE_GET_FORECASTS,
+        supports_response=SupportsResponse.OPTIONAL,
+    )
+
+    with raises(HomeAssistantError, match="Unable to find an entity"):
+        await default_sensor.async_update()
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: -1,
+        },
+    )
+
+    with raises(HomeAssistantError, match="doesn't support 'daily' forecast"):
+        await default_sensor.async_update()
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: -1,
+            ATTR_SUPPORTED_FEATURES: "unexpected",
+        },
+    )
+
+    with raises(HomeAssistantError, match="doesn't support 'daily' forecast"):
+        await default_sensor.async_update()
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: -1,
+            ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_HOURLY,
+        },
+    )
+
+    with raises(HomeAssistantError, match="doesn't support 'daily' forecast"):
+        await default_sensor.async_update()
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: -1,
+            ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_HOURLY
+            | WeatherEntityFeature.FORECAST_DAILY,
+        },
+    )
+
+    with raises(HomeAssistantError, match="Can't get forecast data!"):
+        await default_sensor.async_update()
+
+
 async def test_async_update(hass: HomeAssistant, default_sensor):
     """Test sensor update."""
     hass.states._states[MOCK_WEATHER_ENTITY] = State(MOCK_WEATHER_ENTITY, None)
@@ -184,35 +245,3 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     assert default_sensor.available
     assert default_sensor.is_on is False
     assert default_sensor.icon == ICON_SUMMER
-
-
-async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
-    """Test sensor update on forecast fail."""
-    hass.states._states[MOCK_WEATHER_ENTITY] = State(MOCK_WEATHER_ENTITY, None)
-
-    with raises(HomeAssistantError):
-        await default_sensor.async_update()
-
-    hass.states.async_set(MOCK_WEATHER_ENTITY, "State")
-
-    with raises(HomeAssistantError):
-        await default_sensor.async_update()
-
-    async_mock_service(
-        hass,
-        CONF_WEATHER,
-        SERVICE_GET_FORECASTS,
-        supports_response=SupportsResponse.OPTIONAL,
-    )
-
-    hass.states.async_set(
-        MOCK_WEATHER_ENTITY,
-        "State",
-        attributes={
-            ATTR_WEATHER_TEMPERATURE: -1,
-            ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
-        },
-    )
-
-    with raises(HomeAssistantError):
-        await default_sensor.async_update()

@@ -20,13 +20,15 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_TEMP_LOW,
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
-    DOMAIN as WEATHER,
+    DOMAIN as WEATHER_DOMAIN,
     SERVICE_GET_FORECASTS,
     WeatherEntityFeature,
 )
 from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
+    CONF_ENTITY_ID,
     CONF_NAME,
+    CONF_TYPE,
     CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
     UnitOfTemperature,
@@ -54,7 +56,7 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER),
+        vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER_DOMAIN),
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): cv.positive_int,
         vol.Optional(CONF_UNIQUE_ID): cv.string,
@@ -155,33 +157,37 @@ class SnowtireBinarySensor(BinarySensorEntity):
         self,
     ):  # pylint: disable=too-many-branches,too-many-statements
         """Update the sensor state."""
-        wdata = self.hass.states.get(self._weather_entity)
-
-        if wdata is None:
+        wstate = self.hass.states.get(self._weather_entity)
+        if wstate is None:
             raise HomeAssistantError(
                 f"Unable to find an entity called {self._weather_entity}"
             )
 
+        tmpu = self.hass.config.units.temperature_unit
+        temp = wstate.attributes.get(ATTR_WEATHER_TEMPERATURE)
+
+        wfeatures = wstate.attributes.get(ATTR_SUPPORTED_FEATURES)
         if (
-            wdata.attributes.get(ATTR_SUPPORTED_FEATURES)
-            is not WeatherEntityFeature.FORECAST_DAILY
+            not isinstance(wfeatures, WeatherEntityFeature)
+            or (wfeatures & WeatherEntityFeature.FORECAST_DAILY) == 0
         ):
             raise HomeAssistantError("Weather entity doesn't support 'daily' forecast")
 
-        tmpu = self.hass.config.units.temperature_unit
-        temp = wdata.attributes.get(ATTR_WEATHER_TEMPERATURE)
-        forecast = await self.hass.services.async_call(
-            WEATHER,
-            SERVICE_GET_FORECASTS,
-            {"type": "daily", "entity_id": [self._weather_entity]},
-            blocking=True,
-            return_response=True,
-        )
-
-        if forecast is None:
+        try:
+            forecast = await self.hass.services.async_call(
+                WEATHER_DOMAIN,
+                SERVICE_GET_FORECASTS,
+                {
+                    CONF_TYPE: "daily",
+                    CONF_ENTITY_ID: self._weather_entity,
+                },
+                blocking=True,
+                return_response=True,
+            )
+        except HomeAssistantError as ex:
             raise HomeAssistantError(
                 "Can't get forecast data! Are you sure it's the weather provider?"
-            )
+            ) from ex
 
         _LOGGER.debug("Current temperature %.1f°C", temp)
 
