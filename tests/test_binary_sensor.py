@@ -23,6 +23,7 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_TEMP_LOW,
     ATTR_FORECAST_TIME,
     ATTR_WEATHER_TEMPERATURE,
+    DOMAIN as WEATHER_DOMAIN,
     SERVICE_GET_FORECASTS,
     WeatherEntityFeature,
 )
@@ -31,7 +32,7 @@ from homeassistant.const import (
     CONF_PLATFORM,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant, State, SupportsResponse
+from homeassistant.core import HomeAssistant, SupportsResponse
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import dt as dt_util
 
@@ -107,7 +108,7 @@ async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
     """Test sensor update on forecast fail."""
     async_mock_service(
         hass,
-        CONF_WEATHER,
+        WEATHER_DOMAIN,
         SERVICE_GET_FORECASTS,
         supports_response=SupportsResponse.OPTIONAL,
     )
@@ -166,7 +167,7 @@ async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
 
 async def test_async_update(hass: HomeAssistant, default_sensor):
     """Test sensor update."""
-    hass.states._states[MOCK_WEATHER_ENTITY] = State(MOCK_WEATHER_ENTITY, None)
+    hass.states.async_set(MOCK_WEATHER_ENTITY, None)
 
     with raises(HomeAssistantError):
         await default_sensor.async_update()
@@ -202,7 +203,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         }
     }
 
-    async_mock_service(hass, CONF_WEATHER, SERVICE_GET_FORECASTS, response=forecast)
+    async_mock_service(hass, WEATHER_DOMAIN, SERVICE_GET_FORECASTS, response=forecast)
 
     hass.states.async_set(
         MOCK_WEATHER_ENTITY,
