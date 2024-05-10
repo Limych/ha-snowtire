@@ -167,19 +167,22 @@ class SnowtireBinarySensor(BinarySensorEntity):
         tmpu = self.hass.config.units.temperature_unit
         temp = wstate.attributes.get(ATTR_WEATHER_TEMPERATURE)
 
-        wfeatures = wstate.attributes.get(ATTR_SUPPORTED_FEATURES)
-        if (
-            not isinstance(wfeatures, WeatherEntityFeature)
-            or (wfeatures & WeatherEntityFeature.FORECAST_DAILY) == 0
-        ):
-            raise HomeAssistantError("Weather entity doesn't support 'daily' forecast")
+        wfeatures = wstate.attributes.get(ATTR_SUPPORTED_FEATURES) or 0
+        if (wfeatures & WeatherEntityFeature.FORECAST_DAILY) != 0:
+            forecast_type = "daily"
+        elif (wfeatures & WeatherEntityFeature.FORECAST_TWICE_DAILY) != 0:
+            forecast_type = "twice_daily"
+        elif (wfeatures & WeatherEntityFeature.FORECAST_HOURLY) != 0:
+            forecast_type = "hourly"
+        else:
+            raise HomeAssistantError("Weather entity doesn't support any forecast")
 
         try:
             forecast = await self.hass.services.async_call(
                 WEATHER_DOMAIN,
                 SERVICE_GET_FORECASTS,
                 {
-                    CONF_TYPE: "daily",
+                    CONF_TYPE: forecast_type,
                     CONF_ENTITY_ID: self._weather_entity,
                 },
                 blocking=True,
