@@ -33,10 +33,10 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_START,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import Event, EventStateChangedData, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_conversion import TemperatureConverter
@@ -111,19 +111,20 @@ class SnowtireBinarySensor(BinarySensorEntity):
         self._attr_should_poll = False
         self._attr_device_class = f"{DOMAIN}__type"
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
         """Register callbacks."""
 
         @callback
         # pylint: disable=unused-argument
-        def sensor_state_listener(entity, old_state, new_state):
+        def sensor_state_listener(event: Event[EventStateChangedData]) -> None:
             """Handle device state changes."""
             self.async_schedule_update_ha_state(True)
 
         @callback
-        def sensor_startup(event):  # pylint: disable=unused-argument
+        # pylint: disable=unused-argument
+        def sensor_startup(event) -> None:
             """Update template on startup."""
-            async_track_state_change(
+            async_track_state_change_event(
                 self.hass, [self._weather_entity], sensor_state_listener
             )
 
@@ -204,10 +205,9 @@ class SnowtireBinarySensor(BinarySensorEntity):
             if isinstance(fc_date, int):
                 fc_date = dt_util.as_local(
                     datetime.fromtimestamp(fc_date / 1000, dt_util.UTC)
-                ).isoformat()
+                ).strftime("%F")
             elif isinstance(fc_date, datetime):
-                fc_date = dt_util.as_local(fc_date).isoformat()
-            fc_date = fc_date[:10]
+                fc_date = dt_util.as_local(fc_date).strftime("%F")
             if fc_date < cur_date:
                 continue
             if fc_date == stop_date:
