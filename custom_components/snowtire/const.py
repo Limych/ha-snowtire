@@ -9,7 +9,7 @@ from typing import Final
 # Base component constants
 NAME: Final = "Snowtire Sensor"
 DOMAIN: Final = "snowtire"
-VERSION: Final = "1.4.9-alpha"
+VERSION: Final = "1.4.9"
 ISSUE_URL: Final = "https://github.com/Limych/ha-snowtire/issues"
 
 STARTUP_MESSAGE: Final = f"""
