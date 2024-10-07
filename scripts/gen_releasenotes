@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Helper script to generate release notes."""
+
 import argparse
-from datetime import datetime
 import logging
 import os
 import re
 import subprocess
-from typing import List, Optional, Tuple
+from datetime import datetime
 
 from github import Github, GithubException, Repository, Tag
 from packaging.version import Version
@@ -66,7 +66,7 @@ def get_commits(repo: Repository, since: datetime, until: datetime):
     return reversed(list(commits)[:-1])
 
 
-def get_release_tags(repo: Repository) -> List[Tag.Tag]:
+def get_release_tags(repo: Repository) -> list[Tag.Tag]:
     """Get list of all release tags from repository."""
     tags = list(
         filter(lambda tag: is_pep440(tag.name.lstrip("v")), list(repo.get_tags()))
@@ -76,7 +76,7 @@ def get_release_tags(repo: Repository) -> List[Tag.Tag]:
     return tags
 
 
-def get_period(repo: Repository, release: Optional[str] = None) -> List[datetime]:
+def get_period(repo: Repository, release: str | None = None) -> list[datetime]:
     """Return time period for release notes."""
     data = [datetime.now()]
     dateformat = "%a, %d %b %Y %H:%M:%S GMT"
@@ -98,7 +98,7 @@ def get_period(repo: Repository, release: Optional[str] = None) -> List[datetime
     return list(reversed(data[-2:]))
 
 
-def gen_changes(repo: Repository, tag: Optional[str] = None) -> Tuple[str, str, str]:
+def gen_changes(repo: Repository, tag: str | None = None) -> tuple[str, str, str]:
     """Generate list of commits."""
     all_changes = ""
     human_changes = ""
@@ -124,13 +124,15 @@ def gen_changes(repo: Repository, tag: Optional[str] = None) -> Tuple[str, str, 
             continue
 
         change = CHANGE.format(
-            line=msg, link=commit.html_url, author=commit.author.login
+            line=msg,
+            link=commit.html_url,
+            author=commit.author.login if commit.author else "???",
         )
         all_changes += change
-        if "[bot]" not in commit.author.login:
-            human_changes += change
-        else:
+        if commit.author and "[bot]" in commit.author.login:
             bot_changes += change
+        else:
+            human_changes += change
 
     return (
         all_changes if all_changes != "" else NOCHANGE,
