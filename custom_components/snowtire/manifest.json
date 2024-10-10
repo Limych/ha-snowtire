@@ -11,6 +11,8 @@
     "documentation": "https://github.com/Limych/ha-snowtire",
     "iot_class": "calculated",
     "issue_tracker": "https://github.com/Limych/ha-snowtire/issues",
-    "requirements": [],
+    "requirements": [
+        "pip>=21.3.1"
+    ],
     "version": "1.4.10-alpha"
 }

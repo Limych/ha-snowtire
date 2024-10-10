@@ -5,7 +5,26 @@ from typing import Final
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pytest import raises
+from homeassistant.components.weather import (
+    ATTR_FORECAST_TEMP,
+    ATTR_FORECAST_TEMP_LOW,
+    ATTR_FORECAST_TIME,
+    ATTR_WEATHER_TEMPERATURE,
+    SERVICE_GET_FORECASTS,
+    WeatherEntityFeature,
+)
+from homeassistant.components.weather import (
+    DOMAIN as WEATHER_DOMAIN,
+)
+from homeassistant.const import (
+    ATTR_SUPPORTED_FEATURES,
+    CONF_PLATFORM,
+    CONF_TYPE,
+    UnitOfTemperature,
+)
+from homeassistant.core import HomeAssistant, ServiceRegistry, SupportsResponse
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_mock_service
 
 from custom_components.snowtire.binary_sensor import (
@@ -18,24 +37,6 @@ from custom_components.snowtire.const import (
     ICON_SUMMER,
     ICON_WINTER,
 )
-from homeassistant.components.weather import (
-    ATTR_FORECAST_TEMP,
-    ATTR_FORECAST_TEMP_LOW,
-    ATTR_FORECAST_TIME,
-    ATTR_WEATHER_TEMPERATURE,
-    DOMAIN as WEATHER_DOMAIN,
-    SERVICE_GET_FORECASTS,
-    WeatherEntityFeature,
-)
-from homeassistant.const import (
-    ATTR_SUPPORTED_FEATURES,
-    CONF_PLATFORM,
-    CONF_TYPE,
-    UnitOfTemperature,
-)
-from homeassistant.core import HomeAssistant, ServiceRegistry, SupportsResponse
-from homeassistant.exceptions import HomeAssistantError
-from homeassistant.util import dt as dt_util
 
 MOCK_UNIQUE_ID: Final = "test_id"
 MOCK_NAME: Final = "test_name"
@@ -48,7 +49,7 @@ MOCK_CONFIG: Final = {
 }
 
 
-@pytest.fixture()
+@pytest.fixture
 def default_sensor(hass: HomeAssistant):
     """Create an AverageSensor with default values."""
     entity = SnowtireBinarySensor(
@@ -92,7 +93,7 @@ async def test_async_added_to_hass(default_sensor):
 
 # pylint: disable=protected-access
 @pytest.mark.parametrize(
-    "temp1, temp2",
+    ("temp1", "temp2"),
     [(0, -17.78), (10, -12.22), (20, -6.67), (30, -1.11), (40, 4.44), (50, 10)],
 )
 async def test__temp2c(temp1, temp2):
@@ -114,7 +115,7 @@ async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
         supports_response=SupportsResponse.OPTIONAL,
     )
 
-    with raises(HomeAssistantError, match="Unable to find an entity"):
+    with pytest.raises(HomeAssistantError, match="Unable to find an entity"):
         await default_sensor.async_update()
 
     hass.states.async_set(
@@ -125,7 +126,7 @@ async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
         },
     )
 
-    with raises(HomeAssistantError, match="doesn't support any forecast"):
+    with pytest.raises(HomeAssistantError, match="doesn't support any forecast"):
         await default_sensor.async_update()
 
     hass.states.async_set(
@@ -137,7 +138,7 @@ async def test_async_update_forecast_fail(hass: HomeAssistant, default_sensor):
         },
     )
 
-    with raises(TypeError):
+    with pytest.raises(TypeError):
         await default_sensor.async_update()
 
 
@@ -145,12 +146,12 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
     """Test sensor update."""
     hass.states.async_set(MOCK_WEATHER_ENTITY, None)
 
-    with raises(HomeAssistantError):
+    with pytest.raises(HomeAssistantError):
         await default_sensor.async_update()
 
     hass.states.async_set(MOCK_WEATHER_ENTITY, "State")
 
-    with raises(HomeAssistantError):
+    with pytest.raises(HomeAssistantError):
         await default_sensor.async_update()
 
     hass.states.async_set(
@@ -241,7 +242,7 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         MOCK_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 9.9,
+            ATTR_WEATHER_TEMPERATURE: 11.9,
             ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
         },
     )
@@ -255,12 +256,26 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         MOCK_WEATHER_ENTITY,
         "State",
         attributes={
-            ATTR_WEATHER_TEMPERATURE: 10,
+            ATTR_WEATHER_TEMPERATURE: 12,
             ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
         },
     )
 
     await default_sensor.async_update()
     assert default_sensor.available
-    assert default_sensor.is_on is False
+    assert not default_sensor.is_on
     assert default_sensor.icon == ICON_SUMMER
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
+            ATTR_WEATHER_TEMPERATURE: 7.9,
+            ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
+        },
+    )
+
+    await default_sensor.async_update()
+    assert default_sensor.available
+    assert default_sensor.is_on
+    assert default_sensor.icon == ICON_WINTER
