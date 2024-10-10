@@ -270,6 +270,20 @@ async def test_async_update(hass: HomeAssistant, default_sensor):
         MOCK_WEATHER_ENTITY,
         "State",
         attributes={
+            ATTR_WEATHER_TEMPERATURE: 8,
+            ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
+        },
+    )
+
+    await default_sensor.async_update()
+    assert default_sensor.available
+    assert not default_sensor.is_on
+    assert default_sensor.icon == ICON_SUMMER
+
+    hass.states.async_set(
+        MOCK_WEATHER_ENTITY,
+        "State",
+        attributes={
             ATTR_WEATHER_TEMPERATURE: 7.9,
             ATTR_SUPPORTED_FEATURES: WeatherEntityFeature.FORECAST_DAILY,
         },

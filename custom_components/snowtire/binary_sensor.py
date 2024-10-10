@@ -239,7 +239,9 @@ class SnowtireBinarySensor(BinarySensorEntity):
         temp = sum(temp) / len(temp)
         _LOGGER.debug("Average temperature: %.1f°C", temp)
         self._attr_is_on = temp < (
-            TEMP_CHANGE + TEMP_ERROR
+            TEMP_CHANGE
+            if self._attr_is_on is None
+            else TEMP_CHANGE + TEMP_ERROR
             if self._attr_is_on is True
             else TEMP_CHANGE - TEMP_ERROR
         )
