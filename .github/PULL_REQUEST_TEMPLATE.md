@@ -67,7 +67,8 @@
 
 - [ ] The code change is tested and works locally.
 - [ ] There is no commented out code in this PR.
-- [ ] The code has been formatted using Black (`black --fast custom_components`)
+- [ ] The code has been formatted using Ruff (`python3 -m ruff format custom_components`)
+- [ ] The code quality has been checked using Ruff (`python3 -m ruff check custom_components --fix`)
 
 If user exposed functionality or configuration variables are added/changed:
 

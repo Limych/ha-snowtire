@@ -9,10 +9,10 @@ repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.6.9
     hooks:
+      - id: ruff-format
+        files: ^(custom_components|bin|tests)/.+\.py$
       - id: ruff
         args: [ --fix ]
-        files: ^(custom_components|bin|tests)/.+\.py$
-      - id: ruff-format
         files: ^(custom_components|bin|tests)/.+\.py$
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2

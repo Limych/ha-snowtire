@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Helper script to update requirements."""
+
 import json
 import os
 import sys
@@ -28,7 +29,7 @@ def get_package(requre: str) -> str:
 harequire = ["homeassistant"]
 request = requests.get(
     "https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt",
-    timeout=10
+    timeout=10,
 )
 request = request.text.split("\n")
 for req in request:
