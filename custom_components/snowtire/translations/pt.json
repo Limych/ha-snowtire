@@ -1,10 +1,57 @@
 {
+  "title": "Pneus de Neve",
+  "config": {
+    "abort": {
+      "no_mixed_config": "Já está configurado. Configurações via configuration.yaml não são compatíveis com configurações via UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "name": "Nome da Área",
+          "weather": "Entidade de Previsão do Tempo para a Área",
+          "days": "Dias de Previsão do Tempo a Analisar",
+          "create_notifications": "Criar Notificações"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_options_available": "Configuração criada via configuration.yaml não pode ser alterada via UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "weather": "Entidade de Previsão do Tempo para a Área",
+          "days": "Dias de Previsão do Tempo a Analisar",
+          "create_notifications": "Criar Notificações"
+        },
+        "title": "Opções para {name}"
+      }
+    }
+  },
+  "issues": {
+    "deprecated_platform_config": {
+      "title": "A plataforma `snowtire` para configuração do sensor binário está descontinuada",
+      "description": "A entrada completa `platform: snowtire` na secção `binary_sensor:` no `configuration.yaml` está descontinuada e deve ser substituída pela secção `snowtire:` ou removida. Agora também pode usar a UI para alterar as definições da plataforma snowtire. Por favor, ajuste o seu `configuration.yaml` e reinicie o Home Assistant para corrigir este problema."
+    }
+  },
   "entity": {
     "binary_sensor": {
       "snowtire": {
+        "name": "Pneus para {name}",
         "state": {
           "off": "Verão",
           "on": "Inverno"
+        }
+      }
+    },
+    "notification": {
+      "snowtire": {
+        "name": "Mudar pneus para {name}",
+        "state": {
+          "to_summer": "Para a área {name} é hora de mudar os pneus do carro para os de verão.",
+          "to_winter": "Para a área {name} é hora de mudar os pneus do carro para os de inverno."
         }
       }
     }
