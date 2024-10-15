@@ -96,7 +96,6 @@ class SnowtireFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_NAME, default=self.hass.config.location_name): str,
             }
         ).extend(OPTIONS_SCHEMA.schema)
-        _LOGGER.debug(schema)
         return self.async_show_form(
             step_id="user",
             data_schema=schema,

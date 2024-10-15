@@ -79,9 +79,8 @@ async def test_setup_platform(hass: HomeAssistant, caplog):
     await async_setup_platform(hass, config, async_add_entities, None)
 
     assert async_add_entities.called
-    assert len(caplog.records) == 2
+    assert len(caplog.records) == 1
     assert caplog.records[0].levelname == "INFO"
-    assert caplog.records[1].levelname == "WARNING"
 
 
 async def test_sensor_initialization(hass: HomeAssistant, default_sensor, config):

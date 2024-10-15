@@ -10,6 +10,7 @@ https://github.com/Limych/ha-snowtire/
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 import logging
+from collections.abc import Mapping
 from contextlib import suppress
 from datetime import datetime
 from typing import Final
@@ -33,15 +34,17 @@ from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
     CONF_ENTITY_ID,
     CONF_NAME,
+    CONF_PLATFORM,
     CONF_TYPE,
     CONF_UNIQUE_ID,
     UnitOfTemperature,
 )
-from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.core import Event, HomeAssistant, async_get_hass, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 from homeassistant.helpers.translation import (
     async_get_cached_translations,
 )
@@ -49,6 +52,7 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_conversion import TemperatureConverter
 
+from . import SNOWTIRE_SCHEMA
 from .const import (
     CONF_CREATE_NOTIFICATIONS,
     CONF_DAYS,
@@ -64,15 +68,29 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
+
+def _deprecated_platform(value: str) -> str:
+    """Validate if platform is deprecated."""
+    if value == DOMAIN:
+        _LOGGER.warning(
+            "The 'snowtire' platform for binary sensor configuration is deprecated. "
+            "Please update your YAML-configs or use the UI."
+        )
+        hass = async_get_hass()
+        async_create_issue(
+            hass,
+            DOMAIN,
+            "deprecated_platform_config",
+            is_fixable=False,
+            severity=IssueSeverity.WARNING,
+            translation_key="deprecated_platform_config",
+        )
+    return value
+
+
+PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(SNOWTIRE_SCHEMA.schema).extend(
     {
-        vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER_DOMAIN),
-        vol.Optional(CONF_NAME): cv.string,
-        vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): cv.positive_int,
-        vol.Optional(
-            CONF_CREATE_NOTIFICATIONS, default=DEFAULT_CREATE_NOTIFICATIONS
-        ): bool,
-        vol.Optional(CONF_UNIQUE_ID): cv.string,
+        vol.Required(CONF_PLATFORM): vol.All(cv.string, _deprecated_platform),
     }
 )
 
@@ -83,13 +101,13 @@ TEMP_ERROR: Final = 0.5
 def _translate_notification(
     hass: HomeAssistant,
     translation_key: str,
-    translation_placeholders: dict[str, str] | None = None,
+    translation_placeholders: Mapping[str, str] | None = None,
 ) -> str:
     """Return a translated notification message."""
     translations = async_get_cached_translations(
-        hass, hass.config.language, "notifications", DOMAIN
+        hass, hass.config.language, "entity", DOMAIN
     )
-    localize_key = f"component.{DOMAIN}.notifications.{translation_key}"
+    localize_key = f"component.{DOMAIN}.entity.notification.snowtire.{translation_key}"
     if localize_key in translations:
         message = translations[localize_key]
         if translation_placeholders:
@@ -113,10 +131,6 @@ async def async_setup_platform(
         _LOGGER.info(STARTUP_MESSAGE)
         hass.data.setdefault(DOMAIN, {})
 
-    _LOGGER.warning(
-        "The 'snowtire' platform for binary sensor is DEPRECATED."
-        " Please, update your YAML config."
-    )
     async_add_entities([SnowtireBinarySensor(hass, config)])
 
 
@@ -227,11 +241,11 @@ class SnowtireBinarySensor(BinarySensorEntity):
                 self.hass,
                 _translate_notification(
                     self.hass,
-                    "to_winter" if self._attr_is_on else "to_summer",
+                    "state.to_winter" if self._attr_is_on else "state.to_summer",
                     self._attr_translation_placeholders,
                 ),
                 title=_translate_notification(
-                    self.hass, "title", self._attr_translation_placeholders
+                    self.hass, "name", self._attr_translation_placeholders
                 ),
             )
 

@@ -11,11 +11,22 @@ https://github.com/Limych/ha-snowtire/
 
 import logging
 
+import voluptuous as vol
+from homeassistant.components.weather import (
+    DOMAIN as WEATHER_DOMAIN,
+)
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_NAME, CONF_UNIQUE_ID
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
 from custom_components.snowtire.const import (
+    CONF_CREATE_NOTIFICATIONS,
+    CONF_DAYS,
+    CONF_WEATHER,
+    DEFAULT_CREATE_NOTIFICATIONS,
+    DEFAULT_DAYS,
     DOMAIN,
     DOMAIN_YAML,
     PLATFORMS,
@@ -23,6 +34,22 @@ from custom_components.snowtire.const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+SNOWTIRE_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER_DOMAIN),
+        vol.Optional(CONF_NAME): cv.string,
+        vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): cv.positive_int,
+        vol.Optional(
+            CONF_CREATE_NOTIFICATIONS, default=DEFAULT_CREATE_NOTIFICATIONS
+        ): bool,
+        vol.Optional(CONF_UNIQUE_ID): cv.string,
+    }
+)
+
+CONFIG_SCHEMA = vol.Schema(
+    {DOMAIN: vol.All(cv.ensure_list, [SNOWTIRE_SCHEMA])}, extra=vol.ALLOW_EXTRA
+)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
