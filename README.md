@@ -21,7 +21,7 @@ I also suggest you [visit the support topic][forum] on the community forum.
 ## Breaking Changes
 
 * Since version 1.6.0:
-  * The 'snowtire' platform for binary sensor is DEPRECATED. Please, update your YAML-configs.
+  * The whole `platform: snowtire` entry under the `binary_sensor:` section in `configuration.yaml` is deprecated and should be replaced to `snowtire:` section or removed. Now you also can use the UI to change settings for the snowtire platform. Please adjust your `configuration.yaml` and restart Home Assistant.
   * Default name for sensor is your Home Assistant location name.
 
 ## Installation
