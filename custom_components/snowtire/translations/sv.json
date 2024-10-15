@@ -1,0 +1,12 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "snowtire": {
+        "state": {
+          "off": "Sommar",
+          "on": "Vinter"
+        }
+      }
+    }
+  }
+}

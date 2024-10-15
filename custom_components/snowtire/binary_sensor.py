@@ -1,8 +1,3 @@
-#
-#  Copyright (c) 2020-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
-#  Creative Commons BY-NC-SA 4.0 International Public License
-#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
 """
 The Snowtire binary sensor.
 
@@ -10,11 +5,17 @@ For more details about this platform, please refer to the documentation at
 https://github.com/Limych/ha-snowtire/
 """
 
+#  Copyright (c) 2020-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 import logging
+from contextlib import suppress
 from datetime import datetime
 from typing import Final
 
 import voluptuous as vol
+from homeassistant.components import persistent_notification
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.weather import (
     ATTR_FORECAST_TEMP,
@@ -27,13 +28,13 @@ from homeassistant.components.weather import (
 from homeassistant.components.weather import (
     DOMAIN as WEATHER_DOMAIN,
 )
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
     CONF_ENTITY_ID,
     CONF_NAME,
     CONF_TYPE,
     CONF_UNIQUE_ID,
-    EVENT_HOMEASSISTANT_START,
     UnitOfTemperature,
 )
 from homeassistant.core import Event, HomeAssistant, callback
@@ -41,16 +42,21 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.translation import (
+    async_get_cached_translations,
+)
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_conversion import TemperatureConverter
 
 from .const import (
+    CONF_CREATE_NOTIFICATIONS,
     CONF_DAYS,
     CONF_WEATHER,
+    DEFAULT_CREATE_NOTIFICATIONS,
     DEFAULT_DAYS,
-    DEFAULT_NAME,
     DOMAIN,
+    DOMAIN_YAML,
     ICON_SUMMER,
     ICON_WINTER,
     STARTUP_MESSAGE,
@@ -61,8 +67,11 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_WEATHER): cv.entity_domain(WEATHER_DOMAIN),
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+        vol.Optional(CONF_NAME): cv.string,
         vol.Optional(CONF_DAYS, default=DEFAULT_DAYS): cv.positive_int,
+        vol.Optional(
+            CONF_CREATE_NOTIFICATIONS, default=DEFAULT_CREATE_NOTIFICATIONS
+        ): bool,
         vol.Optional(CONF_UNIQUE_ID): cv.string,
     }
 )
@@ -71,73 +80,114 @@ TEMP_CHANGE: Final = 7
 TEMP_ERROR: Final = 0.5
 
 
+def _translate_notification(
+    hass: HomeAssistant,
+    translation_key: str,
+    translation_placeholders: dict[str, str] | None = None,
+) -> str:
+    """Return a translated notification message."""
+    translations = async_get_cached_translations(
+        hass, hass.config.language, "notifications", DOMAIN
+    )
+    localize_key = f"component.{DOMAIN}.notifications.{translation_key}"
+    if localize_key in translations:
+        message = translations[localize_key]
+        if translation_placeholders:
+            with suppress(KeyError):
+                message = message.format(**translation_placeholders)
+        return message
+
+    # We return the translation key when was not found in the cache
+    return translation_key
+
+
 # pylint: disable=unused-argument
 async def async_setup_platform(
-    hass: HomeAssistant,  # noqa: ARG001
+    hass: HomeAssistant,
     config: ConfigType,
     async_add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType = None,  # noqa: ARG001
 ) -> None:
     """Set up the Snowtire sensor."""
-    # Print startup message
-    _LOGGER.info(STARTUP_MESSAGE)
+    if DOMAIN not in hass.data:
+        _LOGGER.info(STARTUP_MESSAGE)
+        hass.data.setdefault(DOMAIN, {})
 
-    async_add_entities(
-        [
-            SnowtireBinarySensor(
-                config.get(CONF_UNIQUE_ID),
-                config.get(CONF_NAME),
-                config.get(CONF_WEATHER),
-                config.get(CONF_DAYS),
-            )
-        ]
+    _LOGGER.warning(
+        "The 'snowtire' platform for binary sensor is DEPRECATED."
+        " Please, update your YAML config."
     )
+    async_add_entities([SnowtireBinarySensor(hass, config)])
+
+
+# pylint: disable=unused-argument
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Snowtire binary sensor."""
+    entities = []
+    if config_entry.source == SOURCE_IMPORT:
+        # Setup from configuration.yaml
+        for key, cfg in enumerate(hass.data[DOMAIN_YAML]):
+            config = {CONF_UNIQUE_ID: f"{config_entry.entry_id}-{key}"}
+            config.update(cfg)
+            entities.extend([SnowtireBinarySensor(hass, config)])
+
+    else:
+        # Setup from config entry
+        config = config_entry.data.copy()  # type: ConfigType
+        config.update(config_entry.options)
+        config.update({CONF_UNIQUE_ID: config_entry.entry_id})
+
+        entities.extend([SnowtireBinarySensor(hass, config)])
+
+    async_add_entities(entities)
 
 
 class SnowtireBinarySensor(BinarySensorEntity):
     """Implementation of an Snowtire binary sensor."""
 
-    def __init__(
-        self,
-        unique_id: str | None,
-        friendly_name: str,
-        weather_entity: str,
-        days: int,
-    ) -> None:
-        """Initialize the sensor."""
-        self._weather_entity = weather_entity
-        self._days = days
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_translation_key = "snowtire"
 
+    def __init__(self, hass: HomeAssistant, config: ConfigType) -> None:
+        """Initialize the sensor."""
+        self.hass = hass
+
+        self._weather_entity = config.get(CONF_WEATHER)
+        self._days = config.get(CONF_DAYS, DEFAULT_DAYS)
+        self._is_notify = config.get(
+            CONF_CREATE_NOTIFICATIONS, DEFAULT_CREATE_NOTIFICATIONS
+        )
+
+        unique_id = config.get(CONF_UNIQUE_ID)
         self._attr_unique_id = (
             f"{self._weather_entity}-{self._days}"
             if unique_id == "__legacy__"
             else unique_id
         )
-        self._attr_name = friendly_name
-        self._attr_is_on = None
-        self._attr_should_poll = False
-        self._attr_device_class = f"{DOMAIN}__type"
+
+        self._attr_translation_placeholders = {
+            "name": config.get(CONF_NAME, self.hass.config.location_name)
+        }
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
 
         @callback
         # pylint: disable=unused-argument
-        def sensor_state_listener(event: Event) -> None:  # noqa: ARG001
-            """Handle device state changes."""
+        def update_callback(event: Event) -> None:  # noqa: ARG001
+            """Schedule a state update."""
             self.async_schedule_update_ha_state(force_refresh=True)
 
-        @callback
-        # pylint: disable=unused-argument
-        def sensor_startup(event: Event) -> None:  # noqa: ARG001
-            """Update template on startup."""
-            async_track_state_change_event(
-                self.hass, [self._weather_entity], sensor_state_listener
-            )
+        async_track_state_change_event(
+            self.hass, [self._weather_entity], update_callback
+        )
 
-            self.async_schedule_update_ha_state(force_refresh=True)
-
-        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, sensor_startup)
+        self.async_schedule_update_ha_state(force_refresh=True)
 
     @property
     def available(self) -> bool:
@@ -161,7 +211,31 @@ class SnowtireBinarySensor(BinarySensorEntity):
 
         return temperature
 
-    async def async_update(self) -> None:  # noqa: PLR0912
+    async def async_update(self) -> None:
+        """Update the sensor state."""
+        last_state = self._attr_is_on
+
+        await self._async_update()
+
+        if (
+            self._is_notify
+            and (last_state is not None)
+            and (self._attr_is_on != last_state)
+        ):
+            _LOGGER.debug("Posting persistent notification to change tires.")
+            persistent_notification.async_create(
+                self.hass,
+                _translate_notification(
+                    self.hass,
+                    "to_winter" if self._attr_is_on else "to_summer",
+                    self._attr_translation_placeholders,
+                ),
+                title=_translate_notification(
+                    self.hass, "title", self._attr_translation_placeholders
+                ),
+            )
+
+    async def _async_update(self) -> None:  # noqa: PLR0912
         """Update the sensor state."""
         wstate = self.hass.states.get(self._weather_entity)
         if wstate is None:

@@ -18,6 +18,12 @@ _This component checks the weather forecast for several days in advance and conc
 
 I also suggest you [visit the support topic][forum] on the community forum.
 
+## Breaking Changes
+
+* Since version 1.6.0:
+  * The 'snowtire' platform for binary sensor is DEPRECATED. Please, update your YAML-configs.
+  * Default name for sensor is your Home Assistant location name.
+
 ## Installation
 
 ### Install from HACS (recommended)
@@ -46,10 +52,9 @@ I also suggest you [visit the support topic][forum] on the community forum.
 ## Configuration Example
 
 ```yaml
-# Example configuration.yaml entry
-binary_sensor:
-  - platform: snowtire
-    weather: weather.gismeteo_daily
+# Example configuration.yaml entry (see variables description below)
+snowtire:
+  - weather: weather.<YOUR_WEATHER_PROVIDER_ENTITY_ID>
 ```
 
 <p align="center">* * *</p>
@@ -82,12 +87,16 @@ I put a lot of work into making this repo and component available and updated to
   [![My Entities](https://my.home-assistant.io/badges/entities.svg)](https://my.home-assistant.io/redirect/entities/)
 
 **name:**\
-  _(string) (Optional) (Default value: "Snowtire")_\
-  Name to use in the frontend.
+  _(string) (Optional) (Default value: Your HA location name)_\
+  Name of area to use in the frontend.
 
 **days:**\
   _(positive integer) (Optional) (Default value: 7)_\
   The number of days how far forward the sensor looks for the weather forecast.
+
+**create_notifications:**\
+  _(boolean) (Optional) (Default value: True)_\
+  If True, component generates notifications to change tires.
 
 ## Track updates
 

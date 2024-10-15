@@ -7,11 +7,15 @@ https://github.com/Limych/ha-snowtire/
 
 from typing import Final
 
+from homeassistant.const import Platform
+
 # Base component constants
 NAME: Final = "Snowtire Sensor"
 DOMAIN: Final = "snowtire"
-VERSION: Final = "1.5.1-alpha"
+VERSION: Final = "1.6.0-alpha"
 ISSUE_URL: Final = "https://github.com/Limych/ha-snowtire/issues"
+#
+DOMAIN_YAML: Final = f"_yaml_{DOMAIN}"
 
 STARTUP_MESSAGE: Final = f"""
 -------------------------------------------------------------------
@@ -23,6 +27,9 @@ If you have ANY issues with this you need to open an issue here:
 -------------------------------------------------------------------
 """
 
+# Platforms
+PLATFORMS: Final = [Platform.BINARY_SENSOR]
+
 # Icons
 ICON_WINTER: Final = "mdi:snowflake"
 ICON_SUMMER: Final = "mdi:white-balance-sunny"
@@ -30,7 +37,8 @@ ICON_SUMMER: Final = "mdi:white-balance-sunny"
 # Configuration and options
 CONF_WEATHER: Final = "weather"
 CONF_DAYS: Final = "days"
+CONF_CREATE_NOTIFICATIONS: Final = "create_notifications"
 
 # Defaults
-DEFAULT_NAME: Final = "Snowtire"
 DEFAULT_DAYS: Final = 7
+DEFAULT_CREATE_NOTIFICATIONS: Final = True

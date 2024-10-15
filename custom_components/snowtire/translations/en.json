@@ -1,0 +1,49 @@
+{
+  "title": "Snow Tires",
+  "config": {
+    "abort": {
+      "no_mixed_config": "Already configured. Configuration via configuration.yaml are not compatible with configurations via UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "name": "Area Name",
+          "weather": "Weather Forecast Entity for the Area",
+          "days": "Weather Forecast Days to Analyze",
+          "create_notifications": "Create Notifications"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_options_available": "Configuration created via configuration.yaml cannot be changed via UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "weather": "Weather Forecast Entity for the Area",
+          "days": "Weather Forecast Days to Analyze",
+          "create_notifications": "Create Notifications"
+        },
+        "title": "Options for {name}"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "snowtire": {
+        "name": "Tires for {name}",
+        "state": {
+          "off": "Summer",
+          "on": "Winter"
+        }
+      }
+    }
+  },
+  "notifications": {
+    "title": "Change tires for {name}",
+    "to_summer": "For area {name} it's time to change car tires to summer ones.",
+    "to_winter": "For area {name} it's time to change car tires to winter ones."
+  }
+}

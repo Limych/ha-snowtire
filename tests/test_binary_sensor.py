@@ -18,12 +18,15 @@ from homeassistant.components.weather import (
 )
 from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
+    CONF_NAME,
     CONF_PLATFORM,
     CONF_TYPE,
+    CONF_UNIQUE_ID,
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, ServiceRegistry, SupportsResponse
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_mock_service
 
@@ -32,6 +35,8 @@ from custom_components.snowtire.binary_sensor import (
     async_setup_platform,
 )
 from custom_components.snowtire.const import (
+    CONF_CREATE_NOTIFICATIONS,
+    CONF_DAYS,
     CONF_WEATHER,
     DOMAIN,
     ICON_SUMMER,
@@ -43,46 +48,57 @@ MOCK_NAME: Final = "test_name"
 MOCK_WEATHER_ENTITY: Final = "weather.test"
 MOCK_DAYS: Final = 1
 
-MOCK_CONFIG: Final = {
-    CONF_PLATFORM: DOMAIN,
-    CONF_WEATHER: MOCK_WEATHER_ENTITY,
-}
+
+@pytest.fixture(name="config")
+def config_fixture(hass: HomeAssistant) -> ConfigType:
+    """Return default config for tests."""
+    return {
+        CONF_UNIQUE_ID: MOCK_UNIQUE_ID,
+        CONF_NAME: MOCK_NAME,
+        CONF_WEATHER: MOCK_WEATHER_ENTITY,
+        CONF_DAYS: MOCK_DAYS,
+        CONF_CREATE_NOTIFICATIONS: True,
+    }
 
 
-@pytest.fixture
-def default_sensor(hass: HomeAssistant):
+@pytest.fixture(name="default_sensor")
+def default_sensor_fixture(hass: HomeAssistant, config):
     """Create an AverageSensor with default values."""
-    entity = SnowtireBinarySensor(
-        MOCK_UNIQUE_ID, MOCK_NAME, MOCK_WEATHER_ENTITY, MOCK_DAYS
-    )
-    entity.hass = hass
-    return entity
+    return SnowtireBinarySensor(hass, config)
 
 
-async def test_setup_platform(hass: HomeAssistant):
+async def test_setup_platform(hass: HomeAssistant, caplog):
     """Test platform setup."""
     async_add_entities = MagicMock()
 
-    await async_setup_platform(hass, MOCK_CONFIG, async_add_entities, None)
+    caplog.clear()
+    config = {
+        CONF_PLATFORM: DOMAIN,
+        CONF_WEATHER: MOCK_WEATHER_ENTITY,
+    }
+    await async_setup_platform(hass, config, async_add_entities, None)
+
     assert async_add_entities.called
+    assert len(caplog.records) == 2
+    assert caplog.records[0].levelname == "INFO"
+    assert caplog.records[1].levelname == "WARNING"
 
 
-async def test_sensor_initialization(default_sensor):
+async def test_sensor_initialization(hass: HomeAssistant, default_sensor, config):
     """Test sensor initialization."""
     assert default_sensor.unique_id == MOCK_UNIQUE_ID
-    assert default_sensor.device_class == f"{DOMAIN}__type"
-    assert default_sensor.name == MOCK_NAME
+    assert default_sensor.device_class is None
     assert default_sensor.should_poll is False
     assert default_sensor.is_on is None
     assert default_sensor.icon == ICON_WINTER
     assert default_sensor.available is False
 
-    entity = SnowtireBinarySensor(None, MOCK_NAME, MOCK_WEATHER_ENTITY, MOCK_DAYS)
+    config[CONF_UNIQUE_ID] = None
+    entity = SnowtireBinarySensor(hass, config)
     assert entity.unique_id is None
 
-    entity = SnowtireBinarySensor(
-        "__legacy__", MOCK_NAME, MOCK_WEATHER_ENTITY, MOCK_DAYS
-    )
+    config[CONF_UNIQUE_ID] = "__legacy__"
+    entity = SnowtireBinarySensor(hass, config)
     assert entity.unique_id == f"{MOCK_WEATHER_ENTITY}-1"
 
 
