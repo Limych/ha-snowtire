@@ -1,10 +1,57 @@
 {
+  "title": "Snow Tires",
+  "config": {
+    "abort": {
+      "no_mixed_config": "Redan konfigurerad. Konfigurationen i configuration.yaml är inte kompatibel med konfigurationer i gränssnittet."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "name": "Områdesnamn",
+          "weather": "väderprognos-entitet för området",
+          "days": "Dagar att analysera från prognosen",
+          "create_notifications": "Skapa notiser"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_options_available": "Konfigurationen är skapad i configuration.yaml och kan inte ändras i gränssnittet."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "weather": "väderprognos-entitet för området",
+          "days": "Dagar att analysera från prognosen",
+          "create_notifications": "Skapa notiser"
+        },
+        "title": "Alternativ för {name}"
+      }
+    }
+  },
+  "issues": {
+    "deprecated_platform_config": {
+      "title": "Funktionen `platform: snowtire` fasas ut",
+      "description": "`platform: snowtire` under `binary_sensor:` sektionen i `configuration.yaml` kommer att fasas ut och bör ändras till  `snowtire:` eller tas bort helt. Du kan nu göra samma inställningar i gränssnittet. Justera din konfiguration och starta om Home Assistant för att åtgärda detta problemet."
+    }
+  },
   "entity": {
     "binary_sensor": {
       "snowtire": {
+        "name": "Däck för {name}",
         "state": {
           "off": "Sommar",
           "on": "Vinter"
+        }
+      }
+    },
+    "notification": {
+      "snowtire": {
+        "name": "Byt däck för {name}",
+        "state": {
+          "to_summer": "För {name} är det dags att byta bildäck till sommerdäck.",
+          "to_winter": "For {name} är det dags att byta bildäck till vinterdäck."
         }
       }
     }
