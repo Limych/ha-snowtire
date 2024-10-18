@@ -1,10 +1,57 @@
 {
+  "title": "Зимові Шини",
+  "config": {
+    "abort": {
+      "no_mixed_config": "Вже налаштовано. Конфігурація через configuration.yaml несумісна з конфігурацією через UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "name": "Назва області",
+          "weather": "Сутність прогнозу погоди для зони",
+          "days": "Дні прогнозу погоди для аналізу",
+          "create_notifications": "Створювати повідомлення"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_options_available": "Конфігурація, створена через configuration.yaml, не може бути змінена через UI."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "weather": "Сутність прогнозу погоди для зони",
+          "days": "Дні прогнозу погоди для аналізу",
+          "create_notifications": "Створювати повідомлення"
+        },
+        "title": "Опції для {name}"
+      }
+    }
+  },
+  "issues": {
+    "deprecated_platform_config": {
+      "title": "Платформа `snowtire` для конфігурації двійкового сенсора застаріла",
+      "description": "Весь запис `platform: snowtire` в розділі `binary_sensor:` у файлі `configuration.yaml` застарів і має бути замінений на розділ `snowtire:` або видалений. Тепер ви також можете використовувати UI для зміни налаштувань платформи snowtire. Будь ласка, змініть ваш `configuration.yaml` та перезапустіть Home Assistant, щоб виправити цю проблему."
+    }
+  },
   "entity": {
     "binary_sensor": {
       "snowtire": {
+        "name": "Шини для {name}",
         "state": {
           "off": "Літні",
           "on": "Зимові"
+        }
+      }
+    },
+    "notification": {
+      "snowtire": {
+        "name": "Змінити шини для {name}",
+        "state": {
+          "to_summer": "Для зони {name} настав час змінити автомобільні шини на літні.",
+          "to_winter": "Для зони {name} настав час змінити автомобільні шини на зимові."
         }
       }
     }
