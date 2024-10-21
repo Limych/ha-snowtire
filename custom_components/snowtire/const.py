@@ -12,7 +12,7 @@ from homeassistant.const import Platform
 # Base component constants
 NAME: Final = "Snowtire Sensor"
 DOMAIN: Final = "snowtire"
-VERSION: Final = "1.6.0-alpha"
+VERSION: Final = "1.6.0"
 ISSUE_URL: Final = "https://github.com/Limych/ha-snowtire/issues"
 #
 DOMAIN_YAML: Final = f"_yaml_{DOMAIN}"
