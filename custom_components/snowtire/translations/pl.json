@@ -1,5 +1,5 @@
 {
-  "title": "Opony zimowe",
+  "title": "Snowtire",
   "config": {
     "abort": {
       "no_mixed_config": "Już skonfigurowano. Konfiguracja przez configuration.yaml nie jest kompatybilna z konfiguracją przez interfejs użytkownika."
