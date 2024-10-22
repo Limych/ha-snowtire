@@ -1,12 +1,49 @@
 {
+  "title": "Opony zimowe",
+  "config": {
+    "abort": {
+      "no_mixed_config": "Już skonfigurowano. Konfiguracja przez configuration.yaml nie jest kompatybilna z konfiguracją przez interfejs użytkownika."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "name": "Nazwa obszaru",
+          "weather": "Entity z prognozą pogody",
+          "days": "Na ile dni w przód analizować pogodę",
+          "create_notifications": "Stwórz powiadomienia"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_options_available": "Konfiguracja utworzona przez configuration.yaml nie może być zmieniona przez interfejs użytkownika."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "weather": "Entity z prognozą pogody",
+          "days": "Na ile dni w przód analizować pogodę",
+          "create_notifications": "Stwórz powiadomienia"
+        },
+        "title": "Opcje dla {name}"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "snowtire": {
+        "name": "Opony dla {name}",
         "state": {
           "off": "Letnie",
           "on": "Zimowe"
         }
       }
     }
+  },
+  "notifications": {
+    "title": "Zmień opony dla {name}",
+    "to_summer": "Dla obszaru {name} nadszedł czas na zmianę opon na letnie.",
+    "to_winter": "Dla obszaru {name} nadszedł czas na zmianę opon na zimowe."
   }
 }
