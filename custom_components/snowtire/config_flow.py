@@ -116,7 +116,7 @@ class SnowtireOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize HACS options flow."""
-        self.config_entry = config_entry
+        self._config_entry = config_entry
         self.options = dict(config_entry.options)
 
     async def async_step_init(
@@ -124,7 +124,7 @@ class SnowtireOptionsFlowHandler(config_entries.OptionsFlow):
         user_input: ConfigType = None,  # noqa: ARG002
     ) -> config_entries.ConfigFlowResult:  # pylint: disable=unused-argument
         """Manage the options."""
-        if self.config_entry.source == config_entries.SOURCE_IMPORT:
+        if self._config_entry.source == config_entries.SOURCE_IMPORT:
             return self.async_abort(reason="no_options_available")
 
         return await self.async_step_user()
@@ -136,16 +136,16 @@ class SnowtireOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             self.options.update(user_input)
             return self.async_create_entry(
-                title=self.config_entry.data.get(CONF_NAME), data=self.options
+                title=self._config_entry.data.get(CONF_NAME), data=self.options
             )
 
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(
                 OPTIONS_SCHEMA,
-                self.config_entry.options,
+                self._config_entry.options,
             ),
             description_placeholders={
-                "name": self.config_entry.title,
+                "name": self._config_entry.title,
             },
         )
